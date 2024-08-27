@@ -1,0 +1,60 @@
+@page
+@using DevExtremeAspNetCoreApp1.Models
+
+<h2 class="content-block">Home</h2>
+
+@(Html.DevExtreme().DataGrid<SampleOrder>()
+    .ElementAttr(new { @class = "dx-card wide-card" })
+    .DataSource(d => d.Mvc().Controller("SampleData").LoadAction("Get").Key("OrderID"))
+    .ShowBorders(false)
+    .FilterRow(f => f.Visible(true))
+    .FocusedRowEnabled(true)
+    .FocusedRowIndex(0)
+    .ColumnAutoWidth(true)
+    .OnCellPrepared("cell_prepared")
+    .ColumnHidingEnabled(true)
+    .Columns(columns =>
+    {
+        columns.AddFor(m => m.OrderID);
+        columns.AddFor(m => m.OrderDate);
+        columns.AddFor(m => m.CustomerName);
+        columns.AddFor(m => m.ShipCountry);
+        columns.AddFor(m => m.ShipCity);
+        columns.AddFor(m => m.SubType).AllowResizing(true).Width("90px");
+    })
+    .Paging(p => p.PageSize(10))
+    .Pager(p => p
+        .ShowPageSizeSelector(true)
+        .AllowedPageSizes(new[] { 5, 10, 20 })
+        .ShowInfo(true)
+    )
+)
+
+<script>
+
+    function get_badge(tipo) {
+        switch (tipo) {
+            case 'A': return 'bg-success';
+            case 'DAO': return 'bg-blue';
+            case 'COC': return 'bg-blue-200';
+            case 'CCP': return 'bg-purple';
+            default: return 'bg-danger';
+        }
+    }
+
+    function cell_prepared(options) {
+        var fieldData = options.value,
+            fieldHtml = "";
+        if (fieldData) {
+            console.log(fieldData, fieldData.Value, fieldData);
+            if (fieldData) {
+                if (fieldData == "A" || fieldData == "DAO" || fieldData == "COC" || fieldData == "CCP" || fieldData == "CCC") {
+                    fieldHtml = '<div class="' + 'badge ' + get_badge(fieldData) + '">' + fieldData + "</div > ";
+                    options.cellElement.html(fieldHtml);
+                }
+                
+            }
+        }
+
+    }
+</script>
